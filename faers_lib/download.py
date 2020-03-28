@@ -40,7 +40,8 @@ def extract_one_file(fname, cleanup=False):
         print('Extracting %s.' % (out_dir))
         try:
             os.system('unzip %s -d %s' % (fname, out_dir))
-            os.remove(fname)
+            if cleanup:
+                os.remove(fname)
         except Exception as e:
             print(e)
 

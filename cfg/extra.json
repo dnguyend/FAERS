@@ -1,0 +1,149 @@
+{
+    "OUTCOME.OUTC_COD": {
+	"DE": "Death",
+	"LT": "Life-Threatening",
+	"HO":	  "Hospitalization - Initial or Prolonged",
+	"DS": "Disability",
+	"CA": "Congenital Anomaly",
+	"RI": "Required Intervention to Prevent Permanent        Impairment/Damage",
+	"OT": "Other Serious (Important Medical Event)"
+    },
+
+    "THERAPY.DUR_COD": {
+	"YR": "Years",
+	"MON": "Months",
+	"WK": "Weeks",
+	"DAY": "Days",
+	"HR": "Hours",
+	"MIN": "Minutes",
+	"SEC": "Seconds"
+    },
+
+    "REPORT_SOURCES.CODE": {
+	"FGN": "Foreign",
+	"SDY": "Study",
+	"LIT": "Literature",
+	"CSM": "Consumer",
+	"HP": "Health Professional",
+	"UF": "User Facility",
+	"CR": "Company Representative",
+	"DT": "Distributor",
+	"OTH": "Other"
+    },
+
+    "DEMOGRAPHIC.WT_COD": {
+	"KG": "Kilograms",
+	"LBS": "Pounds",
+	"GMS": "Grams"	    
+    },
+
+    "DEMOGRAPHIC.AGE_GRP": {
+	"N": "Neonate",
+	"I": "Infant",
+	"C": "Child",
+	"T": "Adolescent",
+	"A": "Adult",
+	"E": "Elderly"
+    },
+
+    "DEMOGRAPHIC.AGE_COD" : {
+	"DEC": "DECADE",
+	"YR": "YEAR",
+	"MON": "MONTH",
+	"WK": "WEEK",
+	"DY": "DAY",
+	"HR": "HOUR"
+    },
+    
+    "DRUG.DOSE_FREQ": {
+	"1X": "Once or one time",
+	"BID": "Twice a day",
+	"BIW": "Twice a week",
+	"HS": "At bedtime",
+	"PRN": "As needed",
+	"Q12H": "Every 12 hours",
+	"Q2H": "Every 2 hours",
+	"Q3H": "Every 3 hours",
+	"Q3W": "Every 3 weeks",
+	"Q4H": "Every 4 hours",
+	"Q5H": "Every 5 hours",
+	"Q6H": "Every 6 hours",
+	"Q8H": "Every 8 hours",
+	"QD": "Daily",
+	"QH": "Every hour",
+	"QID": "4 times a day",
+	"QM": "Monthly",
+	"QOD": "Every other day",
+	"QOW": "Every other week",
+	"QW": "Every week",
+	"TID": "3 times a day",
+	"TIW": "3 times a week",
+	"UNK": "Unknown"
+    },
+    
+    "DRUG.RECHAL": {
+	"Y": "Positive rechallenge",
+	"N": "Negative rechallenge",
+	"U": "Unknown",
+	"D": "Does not apply"
+    },
+    
+    "DRUG.DECHAL": {
+	"Y": "Positive dechallenge",
+	"N": "Negative dechallenge",
+	"U": "Unknown",
+	"D": "Does not apply"
+    },
+    
+    "DRUG.CUM_DOSE_UNIT": {
+	"KG": "Kilogram(s)",
+	"GM": "Gram(s)",
+	"MG": "Milligram(s)",
+	"UG": "Microgram(s) (μg)",
+	"NG": "Nanogram(s)",
+	"PG": "Picogram(s)",
+	"MG/KG": "Milligram(s)/Kilogram",
+	"UG/KG": "Microgram(s)/Kilogram (μG/KG)",
+	"MG/M**2": "Milligram(s)/Sq. Meter",
+	"UG/M**2": "Microgram(s)/Sq. Meter (μG/M**2)",
+	"L": "Litre(s)",
+	"ML": "Millilitre(s)",
+	"UL": "Microlitre(s) (μL)",
+	"BQ": "Becquerel(s)",
+	"GBQ": "Gigabecquerel(s)",
+	"MBQ": "Megabecquerel(s)",
+	"KBQ": "Kilobecquerel(s)",
+	"CI": "Curie(s)",
+	"MCI": "Millicurie(s)",
+	"UCI": "Microcurie(s) (μCI)",
+	"NCI": "Nanocurie(s)",
+	"MOL": "Mole(s)",
+	"MMOL": "Millimole(s)",
+	"UMOL": "Micromole(s)",
+	"IU": "International Unit(s)",
+	"KIU": "International Unit*(1000s)",
+	"MIU": "International Unit*(1,000,000s)",
+	"IU/KG": "IU/Kilogram",
+	"MEQ": "Milliequivalent(s)",
+	"PCT": "Percent (%)",
+	"GTT": "Drop(s)",
+	"DF": "Dosage Form"
+    },
+    "DRUG.VAL_VBM": {
+	"1": "Validated trade name used",
+	"2": "Verbatim name used"
+    },
+    "DRUG.ROLE_COD": {
+	"PS": "Primary Suspect Drug",
+	"SS": "Secondary Suspect Drug",
+	"C": "Concomitant",
+	"I": "Interacting"
+    },
+    "DEMOGRAPHIC.OCCP_COD": {
+	"MD": "Physician",
+	"PH": "Pharmacist",
+	"OT": "Other health-professional",
+	"LW": "Lawyer",
+	"CN": "Consumer"
+    }
+}

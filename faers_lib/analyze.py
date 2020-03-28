@@ -10,17 +10,22 @@ import pandas as pd
 from .common import file_struct, data_dir_template
 from .common import delete_file_template
 from .common import main_data_path as main_dir
-from IPython.core.display import display
+from IPython.core.display import display, HTML
 
 display_mode = None
 
+
+def bdisplay(s):
+    """utility function to print string in bold face in notebook
+    """
+    display(HTML("<b>%s</b>" % s))
 
 def display_frame(tbl: pd.DataFrame):
     """Display a data table. Either simple print,
     or HTML table
     """
     if display_mode in ['html', 'HTML']:
-        display(tbl.to_html())
+        display(HTML(tbl.to_html()))
     else:
         print(tbl)
 
@@ -30,6 +35,8 @@ def load_deleted_case(yyyy, qq):
     """
     fname = os.path.join(main_dir, delete_file_template % (
         yyyy, qq, yyyy % 100, qq))
+    if not os.path.isfile(fname):
+        return None
     delete_frame = pd.read_csv(fname, sep='$', header=None)
     delete_frame.columns = ['caseid']
     delete_frame['todel'] = np.ones(delete_frame.shape[0], dtype=int)
@@ -41,6 +48,8 @@ def clean_delete_case(frame, delete_frame):
     Implementation: Join with delete_frame -
     the non del elements are the good ones
     """
+    if delete_frame is None:
+        return frame
     tfr = pd.merge(frame, delete_frame, how='left',
                    on=['caseid'])
     return tfr.loc[pd.isnull(tfr.todel)][frame.columns]
@@ -54,7 +63,18 @@ def load_one_file(ftype, yyyy, qq, delete_frame):
     fname = os.path.join(q_dir, file_struct[ftype]['name'] % (yyyy % 100, qq))
     dtypes = file_struct[ftype]['dtype']
     date_cols = file_struct[ftype]['date_cols']
-    frame = pd.read_csv(fname, sep='$', dtype=dtypes)
+    if qq > 4 or qq < 1:
+        print("quarter=%d must between 1 and 4." % qq)
+        raise(IOError("quarter=%d must between 1 and 4." % qq))
+
+    elif not os.path.isfile(fname):
+        print('%s does not exist. Try to download' % fname)
+        raise(IOError('%s does not exist. Try to download' % fname))
+    try:
+        frame = pd.read_csv(fname, sep='$', dtype=dtypes)
+    except Exception as e:
+        print("Read Usuccessful for %s. Try locate bad character in the file then clean up" % ftype)
+        raise(IOError("Read Usuccessful for %s. Try locate bad character in the file then clean up" % ftype))
     for cc in date_cols:
         frame[cc] = pd.to_datetime(frame[cc], format='%Y%m%d', errors='coerce')
     frame = clean_delete_case(frame, delete_frame)
@@ -76,29 +96,7 @@ def load_one_quarter(yyyy, qq):
     return all_frames
 
 
-def _get_drugs_with_many_AE(all_frames):
-    """Misc test, showing drugs with many AE
-    Showing AE on different countries
-    """
-    dr = all_frames['drug']
-    e_by_drug = dr[['drugname', 'primaryid']].groupby(
-        'drugname').count()
-    e_by_drug.rename(columns={'primaryid': 'prim_cnt'}, inplace=True)
-    display_frame(e_by_drug.describe())
-    esort = e_by_drug.sort_values(by='prim_cnt', ascending=False)
-    # print(esort.shape)
-    # print(esort.loc[esort.primaryid > 100].shape)
-    display_frame(esort.head(10))
-    drug_idx = 690
-    display_frame(esort.iloc[690:790])
-    # try a middle of the pack
-    one_drug = esort.iloc[drug_idx, :].name
-    averse_by_country(all_frames, one_drug)
-
-
-def averse_by_country(all_frames, one_drug):
-    """Showing adverse events by country for a particular drug
-    """
+def gen_drug_demo_react_agg(all_frames):
     dr = all_frames['drug']
     de = all_frames['demographic']
     react = all_frames['reaction']
@@ -106,93 +104,8 @@ def averse_by_country(all_frames, one_drug):
         dr[['primaryid', 'drug_seq', 'drugname']],
         de[['primaryid', 'reporter_country', 'occr_country']], how='left',
         left_on='primaryid', right_on='primaryid')
-    dr_de_react_fr = pd.merge(dr_de_fr, react, how='left',
-                              left_on='primaryid', right_on='primaryid')
-    """
-    dr_de_react_fr = pd.merge(dr_de_fr, react, how='left',
-                              left_on='primaryid', right_on='primaryid')
-    """
-    analyze_one_drug_by_country(dr_de_react_fr, one_drug,
-                                cntry_field='occr_country')
-    analyze_one_drug_by_country(dr_de_react_fr, one_drug,
-                                cntry_field='reporter_country')
-
-
-def analyze_one_drug_by_country(
-        dr_de_react_fr, one_drug, cntry_field='occr_country',
-        show_top=10):
-    """Summarizing AE data on one drug by country.
-    We can choose eiither occr_country or reporter_country
-    """
-    print('reporting on %s for %s by country and reaction' % (
-        cntry_field, one_drug))
-    data = dr_de_react_fr.loc[dr_de_react_fr.drugname == one_drug]
-
-    by_cntry_tbl = data[['primaryid', cntry_field]].groupby(
-        by=[cntry_field]).count().sort_values(
-            by='primaryid', ascending=False)
-    by_cntry_tbl.rename(columns={'primaryid': 'cnt'}, inplace=True)
-    display_frame(by_cntry_tbl.head(show_top))
-    print("---------------------")
-    print("TOP EVENTS BY COUNTRY:")
-    for c in by_cntry_tbl.index[:5]:
-        react_by_cntry = data.loc[data[cntry_field] == c][
-            [cntry_field, 'pt', 'primaryid']].groupby(
-                [cntry_field, 'pt']).count().sort_values(
-                    by=['primaryid'], ascending=False)
-        react_by_cntry.rename(columns={'primaryid': 'cnt'}, inplace=True)
-        display_frame(react_by_cntry.head(show_top))
-
-
-def _analyze_by_disease_area(all_frames, dr_de_react_fr):
-    """ test script to find a list of drugs used to
-    treat many diseases. Then break down AE by disease
-    for one example
-    """
-
-    indication = all_frames['indication']
-    dr = all_frames['drug']
-    dr_de_indication_fr = pd.merge(
-        dr_de_react_fr, indication,
-        how='inner', left_on=('primaryid', 'drug_seq'),
-        right_on=('primaryid', 'indi_drug_seq'))
-
-    # look for some drug use for treatment of several diseases:
-    i_drug_name = pd.merge(
-        dr[['primaryid', 'drug_seq', 'drugname']],
-        indication[['primaryid', 'indi_drug_seq', 'indi_pt']],
-        how='inner', left_on=['primaryid', 'drug_seq'],
-        right_on=['primaryid', 'indi_drug_seq'])
-    disct_drug_name = i_drug_name[['drugname', 'indi_pt']].groupby(
-        by=['drugname', 'indi_pt']).count().reset_index()
-
-    drug_disease = disct_drug_name.groupby(
-        by=['drugname']).count().sort_values(
-            by='indi_pt', ascending=False)
-    drug_disease.rename(columns={'primaryid': 'cnt'}, inplace=True)
-    display_frame(drug_disease)
-    a_drug = drug_disease.index[0]
-    analyze_by_disease_area_by_drug(a_drug, dr_de_indication_fr)
-
-
-def analyze_by_disease_area_by_drug(a_drug, dr_de_indication_fr):
-    """ analyze AE by disease area
-    """
-    data_by_drug = dr_de_indication_fr.loc[
-        dr_de_indication_fr.drugname == a_drug]
-    by_disease = data_by_drug[['indi_pt', 'primaryid']].groupby(
-        by=['indi_pt']).count().sort_values(by=['primaryid'], ascending=False)
-    # print(by_disease.head())
-    print("---------------------")
-    print("TOP EVENTS BY INDICATION:")
-
-    for ipt in by_disease.index[1:10].values:
-        data = data_by_drug.loc[data_by_drug.indi_pt == ipt]
-        ipt_report = data[['indi_pt', 'primaryid', 'drugname', 'pt']].groupby(
-            by=['indi_pt', 'drugname', 'pt']).count().sort_values(
-                by='primaryid', ascending=False)
-        ipt_report.rename(columns={'primaryid': 'cnt'}, inplace=True)
-        display_frame(ipt_report.head(10))
+    return pd.merge(dr_de_fr, react, how='left',
+                    left_on='primaryid', right_on='primaryid')
 
 
 def drug_used_together(all_frames):
@@ -273,17 +186,6 @@ def companion_drug(all_frames, a_drug):
         by='primaryid', ascending=False)
     cpn_list.rename(columns={"primaryid": "cnt"}, inplace=True)
     return cpn_list
-
-
-def test_summarize_data(all_frames):
-    """ check that all_frames has been loaded correctly
-    """
-    for kk in all_frames:
-        print(kk)
-        afile = all_frames[kk]
-        print(afile.shape)
-        print(afile.columns)
-    print(data_dir_template)
 
 
 if __name__ == '__main__':
