@@ -22,7 +22,7 @@ As part of the project we:
  * cfg contains several supporting files providing additional information to a number of fields, mainly explaining the abbreviations and providing unit conversion:
     * cfg/convert.txt: Unit conversion.
     * cfg/extra.json: Explanation of abbreviations.
- * Main work book is ![DEMO.ipynb](https://github.com/dnguyend/FAERS/blob/master/DEMO.ipynb). This is a jupyter notebook that could be open in google colab and run directly on the cloud without the need to download it to a home machine. Users can also download to their machines and run if they have a python 3 installation, together with required packages (numpy, pandas, matplotlib, sklearn, bokeh).
+ * Main work book is [DEMO.ipynb](DEMO.ipynb). This is a jupyter notebook that could be open in google colab and run directly on the cloud without the need to download it to a home machine. Users can also download to their machines and run if they have a python 3 installation, together with required packages (numpy, pandas, matplotlib, sklearn, bokeh).
  * We also provide a few example scripts. The examples are all related to DEMO.ipynb but in stand-alone python scripts that could be run on the command line.
  # Organization of data:
  The seven data files are read to a dictionary all_frames (one frame per quarter). Operations involve merging the table to get the required fields and running various aggregation functions (groupby, crosstab) to provide different data views.
